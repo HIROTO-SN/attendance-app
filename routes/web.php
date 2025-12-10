@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\UserDashboard;
+use App\Livewire\UserDashboard\UserDashboard;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
