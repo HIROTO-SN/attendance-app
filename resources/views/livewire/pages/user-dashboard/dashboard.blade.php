@@ -66,7 +66,8 @@
                             $shift = $this->monthlyShifts[$key] ?? null;
                             @endphp
 
-                            <tr class="hover:bg-indigo-50 transition">
+                            <tr class="hover:bg-indigo-50 transition cursor-pointer"
+                                wire:dblclick="openEditModal('{{ $key }}')">
                                 <td class="px-4 py-3 border-b">{{ $key }}</td>
                                 <td class="px-4 py-3 border-b">{{ $date->format('D') }}</td>
 
@@ -107,6 +108,7 @@
                             </tr>
                             @endforeach
                         </tbody>
+                        <livewire:user-dashboard.shift-modal />
                     </table>
                 </div>
             </div>
