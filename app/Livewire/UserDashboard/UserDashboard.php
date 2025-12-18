@@ -14,7 +14,7 @@ class UserDashboard extends Component {
     {
         $this->month = now()->month;
     }
-    
+
     public function mount() {
         $this->year = now()->year;
         $this->month = now()->month;
@@ -64,6 +64,13 @@ class UserDashboard extends Component {
         ])->to('user-dashboard.shift-modal');
     }
 
+    public function goToToday()
+    {
+        $today = Carbon::today();
+
+        $this->year = $today->year;
+        $this->month = $today->month;
+    }
 
     public function render() {
         return view( 'livewire.pages.user-dashboard.dashboard' )
