@@ -36,7 +36,7 @@
                         </button>
                     </div>
 
-                    <select wire:model="year"
+                    <select wire:model.live="year"
                         class="border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         @foreach (range(now()->year, now()->year - 5) as $y)
                         <option value="{{ $y }}">{{ $y }}</option>
@@ -66,8 +66,10 @@
                             $shift = $this->monthlyShifts[$key] ?? null;
                             @endphp
 
-                            <tr class="hover:bg-indigo-50 transition cursor-pointer"
+                            <tr wire:key="shift-{{ $year }}-{{ $month }}-{{ $day }}"
+                                class="hover:bg-indigo-50 transition cursor-pointer"
                                 wire:dblclick="openEditModal('{{ $key }}')">
+
                                 <td class="px-4 py-3 border-b">{{ $key }}</td>
                                 <td class="px-4 py-3 border-b">{{ $date->format('D') }}</td>
 

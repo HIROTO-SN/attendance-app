@@ -10,6 +10,11 @@ class UserDashboard extends Component {
     public $year;
     public $month;
 
+    public function updatedYear()
+    {
+        $this->month = now()->month;
+    }
+    
     public function mount() {
         $this->year = now()->year;
         $this->month = now()->month;
