@@ -34,9 +34,14 @@
                             class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition">
                             Next →
                         </button>
+
+                        <button wire:click="goToToday"
+                            class="ml-4 px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition font-semibold">
+                            Today
+                        </button>
                     </div>
 
-                    <select wire:model="year"
+                    <select wire:model.live="year"
                         class="border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         @foreach (range(now()->year, now()->year - 5) as $y)
                         <option value="{{ $y }}">{{ $y }}</option>
@@ -66,7 +71,10 @@
                             $shift = $this->monthlyShifts[$key] ?? null;
                             @endphp
 
-                            <tr class="hover:bg-indigo-50 transition">
+                            <tr wire:key="shift-{{ $year }}-{{ $month }}-{{ $day }}"
+                                class="hover:bg-indigo-50 transition cursor-pointer"
+                                wire:dblclick="openEditModal('{{ $key }}')">
+
                                 <td class="px-4 py-3 border-b">{{ $key }}</td>
                                 <td class="px-4 py-3 border-b">{{ $date->format('D') }}</td>
 
@@ -107,6 +115,7 @@
                             </tr>
                             @endforeach
                         </tbody>
+                        <livewire:user-dashboard.shift-modal />
                     </table>
                 </div>
             </div>

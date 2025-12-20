@@ -10,6 +10,11 @@ class UserDashboard extends Component {
     public $year;
     public $month;
 
+    public function updatedYear()
+    {
+        $this->month = now()->month;
+    }
+
     public function mount() {
         $this->year = now()->year;
         $this->month = now()->month;
@@ -46,8 +51,29 @@ class UserDashboard extends Component {
             });
     }
 
+    public function openEditModal(string $date)
+    {
+        $shift = $this->monthlyShifts[$date] ?? null;
+
+        $this->dispatch('openShiftModal', [
+            'shiftId' => $shift?->id,
+            'date' => $date,
+            'start_time' => $shift?->start_time?->format('H:i') ?? '',
+            'end_time' => $shift?->end_time?->format('H:i') ?? '',
+            'break_minutes' => $shift?->break_minutes ?? 60,
+        ])->to('user-dashboard.shift-modal');
+    }
+
+    public function goToToday()
+    {
+        $today = Carbon::today();
+
+        $this->year = $today->year;
+        $this->month = $today->month;
+    }
+
     public function render() {
-        return view( 'livewire.pages.dashboard.user-dashboard' )
+        return view( 'livewire.pages.user-dashboard.dashboard' )
         ->layout( 'layouts.app' );
     }
 }
