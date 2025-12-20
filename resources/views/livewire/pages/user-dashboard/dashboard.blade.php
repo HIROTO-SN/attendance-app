@@ -34,6 +34,11 @@
                             class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition">
                             Next →
                         </button>
+
+                        <button wire:click="goToToday"
+                            class="ml-4 px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition font-semibold">
+                            Today
+                        </button>
                     </div>
 
                     <select wire:model.live="year"
