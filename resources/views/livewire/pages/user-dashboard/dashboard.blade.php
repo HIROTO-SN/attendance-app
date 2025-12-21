@@ -68,10 +68,10 @@
                             @php
                             $date = \Carbon\Carbon::create($year, $month, $day);
                             $key = $date->format('Y-m-d');
-                            $shift = $this->monthlyShifts[$key] ?? null;
+                            $attendance = $this->monthlyAttendances[$key] ?? null;
                             @endphp
 
-                            <tr wire:key="shift-{{ $year }}-{{ $month }}-{{ $day }}"
+                            <tr wire:key="attendance-{{ $year }}-{{ $month }}-{{ $day }}"
                                 class="hover:bg-indigo-50 transition cursor-pointer"
                                 wire:dblclick="openEditModal('{{ $key }}')">
 
@@ -80,24 +80,32 @@
 
                                 <!-- Clock In -->
                                 <td class="px-4 py-3 border-b">
-                                    {{ $shift?->start_time?->format('H:i') ?? '--' }}
+                                    {{ $attendance?->clock_in?->format('H:i') ?? '--' }}
                                 </td>
 
                                 <!-- Clock Out -->
                                 <td class="px-4 py-3 border-b">
-                                    {{ $shift?->end_time?->format('H:i') ?? '--' }}
+                                    {{ $attendance?->clock_out?->format('H:i') ?? '--' }}
                                 </td>
 
                                 <!-- Break -->
                                 <td class="px-4 py-3 border-b">
-                                    {{ $shift?->break_minutes ? $shift->break_minutes.' min' : '--' }}
+                                    {{ $attendance?->break_minutes ? $attendance->break_minutes.' min' : '--' }}
                                 </td>
 
                                 <!-- Total Hours -->
                                 <td class="px-4 py-3 border-b">
-                                    @if ($shift && $shift->start_time && $shift->end_time)
-                                    {{ $shift->start_time->diffInHours($shift->end_time) - ($shift->break_minutes / 60)
-                                    }}
+                                    @if ($attendance && $attendance->clock_in && $attendance->clock_out)
+                                    @php
+                                    $totalMinutes =
+                                    $attendance->clock_in->diffInMinutes($attendance->clock_out)
+                                    - $attendance->break_minutes;
+
+                                    $hours = intdiv($totalMinutes, 60);
+                                    $minutes = $totalMinutes % 60;
+                                    @endphp
+
+                                    {{ $hours }}時間{{ $minutes }}分
                                     @else
                                     --
                                     @endif
@@ -105,7 +113,7 @@
 
                                 <!-- Status -->
                                 <td class="px-4 py-3 border-b">
-                                    @if ($shift)
+                                    @if ($attendance)
                                     <span
                                         class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full font-semibold">
                                         Normal
