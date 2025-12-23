@@ -2,13 +2,17 @@
 
 namespace App\Livewire\UserDashboard;
 
-use App\Models\Shift;
+use App\Models\AttendanceRecord;
 use Livewire\Component;
 use Carbon\Carbon;
 
 class UserDashboard extends Component {
     public $year;
     public $month;
+
+     protected $listeners = [
+        'shift-updated' => 'shiftUpdated',
+    ];
 
     public function updatedYear()
     {
@@ -40,14 +44,14 @@ class UserDashboard extends Component {
         return Carbon::create( $this->year, $this->month )->format( 'F' );
     }
 
-    public function getMonthlyShiftsProperty()
+    public function getMonthlyAttendancesProperty()
     {
-        return Shift::where('user_id', auth()->id())
-            ->whereYear('shift_date', $this->year)
-            ->whereMonth('shift_date', $this->month)
+        return AttendanceRecord::where('user_id', auth()->id())
+            ->whereYear('clock_in', $this->year)
+            ->whereMonth('clock_out', $this->month)
             ->get()
-            ->keyBy(function ($shift) {
-                return $shift->shift_date->format('Y-m-d');
+            ->keyBy(function ($attendance) {
+                return $attendance->work_date->format('Y-m-d');
             });
     }
 
@@ -70,6 +74,10 @@ class UserDashboard extends Component {
 
         $this->year = $today->year;
         $this->month = $today->month;
+    }
+
+    public function shiftUpdated () {
+        
     }
 
     public function render() {
