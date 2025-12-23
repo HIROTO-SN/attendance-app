@@ -31,7 +31,6 @@ class ShiftModal extends Component {
         $this->reset();
 
         $this->show = true;
-
         $this->shiftId = $payload[ 'shiftId' ];
         $this->date = $payload[ 'date' ];
         $this->start_time = $payload[ 'start_time' ];
