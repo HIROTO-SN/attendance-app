@@ -57,13 +57,13 @@ class UserDashboard extends Component {
 
     public function openEditModal(string $date)
     {
-        $shift = $this->monthlyShifts[$date] ?? null;
+        $shift = $this->monthlyAttendances[$date] ?? null;
 
         $this->dispatch('openShiftModal', [
             'shiftId' => $shift?->id,
             'date' => $date,
-            'start_time' => $shift?->start_time?->format('H:i') ?? '',
-            'end_time' => $shift?->end_time?->format('H:i') ?? '',
+            'start_time' => $shift?->clock_in?->format('H:i') ?? '',
+            'end_time' => $shift?->clock_out?->format('H:i') ?? '',
             'break_minutes' => $shift?->break_minutes ?? 60,
         ])->to('user-dashboard.shift-modal');
     }
