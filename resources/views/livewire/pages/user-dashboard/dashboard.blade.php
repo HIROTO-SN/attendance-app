@@ -104,8 +104,7 @@
                                     $hours = intdiv($totalMinutes, 60);
                                     $minutes = $totalMinutes % 60;
                                     @endphp
-
-                                    {{ $hours }}時間{{ $minutes }}分
+                                    {{ $hours }}:{{ $minutes }}
                                     @else
                                     --
                                     @endif
