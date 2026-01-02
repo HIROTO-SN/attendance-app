@@ -5,6 +5,7 @@ namespace App\Livewire\UserDashboard;
 use App\Models\AttendanceRecord;
 use Livewire\Component;
 use Carbon\Carbon;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class UserDashboard extends Component {
     public $year;
@@ -77,7 +78,11 @@ class UserDashboard extends Component {
     }
 
     public function shiftUpdated () {
-        
+        LivewireAlert::title( 'Success' )
+        ->text( 'Your shift has been registered successfully' )
+        ->position( 'center' )
+        ->success()
+        ->show();
     }
 
     public function render() {

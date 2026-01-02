@@ -130,3 +130,5 @@
         </div>
     </main>
 </div>
+
+@livewireAlerts
