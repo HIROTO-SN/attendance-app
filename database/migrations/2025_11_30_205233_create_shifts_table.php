@@ -12,13 +12,27 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('shifts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->date('shift_date');
-            $table->time('start_time')->nullable();
-            $table->time('end_time')->nullable();
-            $table->integer('break_minutes')->default(0);
-            $table->timestamps();
+            // 勤務形態
+            $table->string('work_type')->after('user_id');
+            // normal / flex / short_time
+
+            // 所定労働時間（分）
+            $table->integer('daily_work_minutes')->after('work_type');
+
+            // 標準休憩時間（分）
+            $table->integer('break_minutes')->default(60)->change();
+
+            // 通常・時短用の基準時間
+            $table->time('standard_start_time')->nullable()->after('break_minutes');
+            $table->time('standard_end_time')->nullable()->after('standard_start_time');
+
+            // フレックス用コアタイム
+            $table->time('core_start_time')->nullable()->after('standard_end_time');
+            $table->time('core_end_time')->nullable()->after('core_start_time');
+
+            // 適用期間
+            $table->date('effective_from')->after('core_end_time');
+            $table->date('effective_to')->nullable()->after('effective_from');
         });
     }
 
