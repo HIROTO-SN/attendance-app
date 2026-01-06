@@ -87,6 +87,6 @@ class User extends Authenticatable {
     // シフト
 
     public function shifts() {
-        return $this->hasMany( Shift::class );
+        return $this->hasOne( Shift::class );
     }
 }
