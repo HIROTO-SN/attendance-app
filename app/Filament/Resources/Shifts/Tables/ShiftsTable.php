@@ -17,17 +17,25 @@ class ShiftsTable
                 TextColumn::make('user_id')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('shift_date')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('start_time')
-                    ->time()
-                    ->sortable(),
-                TextColumn::make('end_time')
-                    ->time()
+                TextColumn::make('work_type')
+                    ->searchable(),
+                TextColumn::make('daily_work_minutes')
+                    ->numeric()
                     ->sortable(),
                 TextColumn::make('break_minutes')
                     ->numeric()
+                    ->sortable(),
+                TextColumn::make('standard_start_time')
+                    ->time()
+                    ->sortable(),
+                TextColumn::make('standard_end_time')
+                    ->time()
+                    ->sortable(),
+                TextColumn::make('core_start_time')
+                    ->time()
+                    ->sortable(),
+                TextColumn::make('core_end_time')
+                    ->time()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
