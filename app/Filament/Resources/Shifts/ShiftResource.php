@@ -20,7 +20,7 @@ class ShiftResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'user_id';
+    protected static ?string $recordTitleAttribute = 'Shifts';
 
     public static function form(Schema $schema): Schema
     {
