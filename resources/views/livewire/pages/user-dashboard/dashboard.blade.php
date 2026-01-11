@@ -56,6 +56,7 @@
                             <tr>
                                 <th class="px-4 py-3 border-b">Date</th>
                                 <th class="px-4 py-3 border-b">Day</th>
+                                <th class="px-4 py-3 border-b">Std Time</th>
                                 <th class="px-4 py-3 border-b">Clock In</th>
                                 <th class="px-4 py-3 border-b">Clock Out</th>
                                 <th class="px-4 py-3 border-b">Break</th>
@@ -63,6 +64,7 @@
                                 <th class="px-4 py-3 border-b">Status</th>
                             </tr>
                         </thead>
+
                         <tbody class="text-gray-800 text-sm">
                             @foreach (range(1, $this->daysInMonth) as $day)
                             @php
@@ -71,49 +73,66 @@
                             $attendance = $this->monthlyAttendances[$key] ?? null;
                             @endphp
 
-                            <tr wire:key="attendance-{{ $year }}-{{ $month }}-{{ $day }}"
-                                class="hover:bg-indigo-50 transition cursor-pointer"
+                            @php
+                            $row = $this->monthlyRows[$key];
+                            $attendance = $row['attendance'];
+                            $shift = $row['shift'];
+                            @endphp
+
+                            <tr wire:key="attendance-{{ $key }}" class="hover:bg-indigo-50 transition cursor-pointer"
                                 wire:dblclick="openEditModal('{{ $key }}')">
 
                                 <td class="px-4 py-3 border-b">{{ $key }}</td>
                                 <td class="px-4 py-3 border-b">{{ $date->format('D') }}</td>
 
-                                <!-- Clock In -->
+                                {{-- Standard Time --}}
+                                <td class="px-4 py-3 border-b text-gray-600">
+                                    @if($shift && in_array($shift->workType->code, ['fixed','short_time']))
+                                    {{ $shift->standard_start_time }} – {{ $shift->standard_end_time }}
+                                    @elseif($shift && $shift->workType->code === 'flex')
+                                    Core {{ $shift->core_start_time }} – {{ $shift->core_end_time }}
+                                    @else
+                                    —
+                                    @endif
+                                </td>
+
+                                {{-- Clock In --}}
                                 <td class="px-4 py-3 border-b">
                                     {{ $attendance?->clock_in?->format('H:i') ?? '--' }}
                                 </td>
 
-                                <!-- Clock Out -->
+                                {{-- Clock Out --}}
                                 <td class="px-4 py-3 border-b">
                                     {{ $attendance?->clock_out?->format('H:i') ?? '--' }}
                                 </td>
 
-                                <!-- Break -->
+                                {{-- Break --}}
                                 <td class="px-4 py-3 border-b">
-                                    {{ $attendance?->break_minutes ? $attendance->break_minutes.' min' : '--' }}
+                                    {{ $attendance?->break_minutes ?? $shift?->break_minutes ?? '--' }} min
                                 </td>
 
-                                <!-- Total Hours -->
+                                {{-- Total --}}
                                 <td class="px-4 py-3 border-b">
                                     @if ($attendance && $attendance->clock_in && $attendance->clock_out)
                                     @php
                                     $totalMinutes =
                                     $attendance->clock_in->diffInMinutes($attendance->clock_out)
-                                    - $attendance->break_minutes;
-
-                                    $hours = intdiv($totalMinutes, 60);
-                                    $minutes = $totalMinutes % 60;
+                                    - ($attendance->break_minutes ?? 0);
                                     @endphp
-
-                                    {{ $hours }}:{{ $minutes }}
+                                    {{ intdiv($totalMinutes, 60) }}:{{ str_pad($totalMinutes % 60, 2, '0', STR_PAD_LEFT)
+                                    }}
                                     @else
                                     --
                                     @endif
                                 </td>
 
-                                <!-- Status -->
+                                {{-- Status --}}
                                 <td class="px-4 py-3 border-b">
-                                    @if ($attendance)
+                                    @if(!$attendance)
+                                    —
+                                    @elseif($shift?->workType?->code === 'manager')
+                                    —
+                                    @else
                                     <span
                                         class="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-full font-semibold">
                                         Normal
@@ -121,6 +140,7 @@
                                     @endif
                                 </td>
                             </tr>
+
                             @endforeach
                         </tbody>
                         <livewire:user-dashboard.shift-modal />
