@@ -10,10 +10,13 @@ class Shift extends Model {
 
     protected $fillable = [
         'user_id',
-        'shift_date',
-        'start_time',
-        'end_time',
+        'work_type_id',
+        'daily_work_minutes',
         'break_minutes',
+        'standard_start_time',
+        'standard_end_time',
+        'core_start_time',
+        'core_end_time',
     ];
 
     protected $casts = [
@@ -24,5 +27,9 @@ class Shift extends Model {
 
     public function user() {
         return $this->belongsTo( User::class );
+    }
+
+    public function workType() {
+        return $this->belongsTo( WorkType::class );
     }
 }
