@@ -99,6 +99,14 @@ class UserDashboard extends Component {
         return $rows;
     }
 
+    public function getCurrentMonthShiftProperty()
+    {
+        return \App\Models\Shift::with('workType')
+            ->where('user_id', auth()->id())
+            ->latest('id') // or created_at
+            ->first();
+    }
+
     public function openEditModal(string $date)
     {
         $shift = $this->monthlyAttendances[$date] ?? null;
