@@ -148,6 +148,7 @@
                                     @endphp
                                     {{ intdiv($totalMinutes, 60) }}:{{ str_pad($totalMinutes % 60, 2, '0', STR_PAD_LEFT)
                                     }}
+
                                     @else
                                     --
                                     @endif
