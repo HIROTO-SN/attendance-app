@@ -15,36 +15,7 @@
                 <p class="text-gray-500 mt-2 text-lg">View and manage your monthly attendance</p>
             </div>
 
-            @php
-            $currentShift = $this->currentMonthShift;
-
-            $overtimeMinutes = 0;
-            foreach ($this->monthlyRows as $row) {
-            if (
-            $row['attendance'] &&
-            $row['shift'] &&
-            $row['shift']->daily_work_minutes
-            ) {
-            $worked =
-            $row['attendance']->clock_in &&
-            $row['attendance']->clock_out
-            ? $row['attendance']->clock_in
-            ->diffInMinutes($row['attendance']->clock_out)
-            - ($row['attendance']->break_minutes ?? 0)
-            : 0;
-
-            $overtimeMinutes += max(
-            0,
-            $worked - $row['shift']->daily_work_minutes
-            );
-            }
-            }
-            @endphp
-
-            @include('livewire.pages.user-dashboard.shift-summary', [
-            'currentShift' => $currentShift,
-            'overtimeMinutes' => $overtimeMinutes,
-            ])
+            <livewire:user-dashboard.shift-summary :year="$year" :month="$month" />
 
             <!-- Attendance Card -->
             <div
