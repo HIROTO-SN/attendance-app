@@ -14,37 +14,32 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class HolidayCalendarResource extends Resource
-{
+class HolidayCalendarResource extends Resource {
     protected static ?string $model = HolidayCalendar::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'holiday_date';
 
-    public static function form(Schema $schema): Schema
-    {
-        return HolidayCalendarForm::configure($schema);
+    public static function form( Schema $schema ): Schema {
+        return HolidayCalendarForm::configure( $schema );
     }
 
-    public static function table(Table $table): Table
-    {
-        return HolidayCalendarsTable::configure($table);
+    public static function table( Table $table ): Table {
+        return HolidayCalendarsTable::configure( $table );
     }
 
-    public static function getRelations(): array
-    {
+    public static function getRelations(): array {
         return [
             //
         ];
     }
 
-    public static function getPages(): array
-    {
+    public static function getPages(): array {
         return [
-            'index' => ListHolidayCalendars::route('/'),
-            'create' => CreateHolidayCalendar::route('/create'),
-            'edit' => EditHolidayCalendar::route('/{record}/edit'),
+            'index' => ListHolidayCalendars::route( '/' ),
+            'create' => CreateHolidayCalendar::route( '/create' ),
+            'edit' => EditHolidayCalendar::route( '/{record}/edit' ),
         ];
     }
 }

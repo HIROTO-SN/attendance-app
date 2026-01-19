@@ -3,6 +3,7 @@
 namespace App\Livewire\UserDashboard;
 
 use App\Models\AttendanceRecord;
+use App\Models\Shift;
 use Livewire\Component;
 use Carbon\Carbon;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
@@ -54,6 +55,56 @@ class UserDashboard extends Component {
             ->keyBy(function ($attendance) {
                 return $attendance->work_date->format('Y-m-d');
             });
+    }
+
+    public function getMonthlyShiftsProperty()
+    {
+        return Shift::with('workType')
+            ->where('user_id', auth()->id())
+            ->get();
+    }
+
+    public function resolveShiftForDate(Carbon $date)
+    {
+        return $this->monthlyShifts
+            ->last(fn ($shift) =>
+                $shift->effective_from <= $date &&
+                (
+                    is_null($shift->effective_to) ||
+                    $shift->effective_to >= $date
+                )
+            );
+    }
+
+    public function getMonthlyRowsProperty()
+    {
+        $rows = [];
+
+        $daysInMonth = Carbon::create($this->year, $this->month)->daysInMonth;
+
+        for ($day = 1; $day <= $daysInMonth; $day++) {
+            $date = Carbon::create($this->year, $this->month, $day);
+            $dateKey = $date->format('Y-m-d');
+
+            $attendance = $this->monthlyAttendances[$dateKey] ?? null;
+            $shift = $this->resolveShiftForDate($date);
+
+            $rows[$dateKey] = [
+                'date' => $date,
+                'attendance' => $attendance,
+                'shift' => $shift,
+            ];
+        }
+
+        return $rows;
+    }
+
+    public function getCurrentMonthShiftProperty()
+    {
+        return \App\Models\Shift::with('workType')
+            ->where('user_id', auth()->id())
+            ->latest('id') // or created_at
+            ->first();
     }
 
     public function openEditModal(string $date)
