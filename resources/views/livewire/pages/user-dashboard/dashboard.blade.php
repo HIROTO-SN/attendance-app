@@ -75,11 +75,17 @@
                             $row = $this->monthlyRows[$key];
                             $attendance = $row['attendance'];
                             $shift = $row['shift'];
+                            $isWeekend = $date->isWeekend();
+                            $isHoliday = in_array($key, $this->holidayDates);
                             @endphp
 
-                            <tr wire:key="attendance-{{ $key }}" class="hover:bg-indigo-50 transition cursor-pointer"
-                                wire:dblclick="openEditModal('{{ $key }}')">
-
+                            <tr wire:key="attendance-{{ $key }}" wire:dblclick="openEditModal('{{ $key }}')" class="
+                                transition cursor-pointer
+                                hover:bg-indigo-50
+                                @if($isHoliday) bg-gray-200
+                                @elseif($isWeekend) bg-gray-300
+                                @endif
+                            ">
                                 <td class="px-4 py-3 border-b">{{ $key }}</td>
                                 <td class="px-4 py-3 border-b">{{ $date->format('D') }}</td>
 

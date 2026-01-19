@@ -71,6 +71,48 @@ class ShiftSummary extends Component {
         });
     }
 
+    public function getMonthlyWorkableDaysProperty(): int
+    {
+        $start = $this->monthStart();
+        $end   = $this->monthEnd();
+
+        $holidays = HolidayCalendar::whereBetween(
+            'holiday_date',
+            [$start, $end]
+        )->pluck('holiday_date')->map(fn ($d) => $d->toDateString())->toArray();
+
+        $days = 0;
+
+        for ($date = $start->copy(); $date <= $end; $date->addDay()) {
+            if ($date->isWeekend()) {
+                continue;
+            }
+
+            if (in_array($date->toDateString(), $holidays)) {
+                continue;
+            }
+
+            $days++;
+        }
+
+        return $days;
+    }
+
+    public function getMonthlyConsumedDaysProperty(): int
+    {
+        return $this->monthlyAttendances()
+            ->filter(fn ($a) => $a->clock_in && $a->clock_out)
+            ->count();
+    }
+
+    public function getDailyWorkHoursProperty(): ?int
+    {
+        if (! $this->currentShift?->daily_work_minutes) {
+            return null;
+        }
+
+        return intdiv($this->currentShift->daily_work_minutes, 60);
+    }
     public function getMonthlyTargetMinutesProperty(): int
     {
         $shift = $this->currentShift;
