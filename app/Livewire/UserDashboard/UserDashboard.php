@@ -3,6 +3,7 @@
 namespace App\Livewire\UserDashboard;
 
 use App\Models\AttendanceRecord;
+use App\Models\HolidayCalendar;
 use App\Models\Shift;
 use Livewire\Component;
 use Carbon\Carbon;
@@ -134,6 +135,26 @@ class UserDashboard extends Component {
         ->position( 'center' )
         ->success()
         ->show();
+    }
+
+    public function getHolidayDatesProperty(): array
+    {
+        return HolidayCalendar::whereBetween(
+            'holiday_date',
+            [$this->monthStart(), $this->monthEnd()]
+        )->pluck('holiday_date')
+        ->map(fn ($d) => $d->toDateString())
+        ->toArray();
+    }
+
+    protected function monthStart(): Carbon
+    {
+        return Carbon::create($this->year, $this->month, 1)->startOfMonth();
+    }
+
+    protected function monthEnd(): Carbon
+    {
+        return Carbon::create($this->year, $this->month, 1)->endOfMonth();
     }
 
     public function render() {
