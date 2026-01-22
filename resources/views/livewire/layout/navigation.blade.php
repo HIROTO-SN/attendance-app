@@ -36,7 +36,7 @@ new class extends Component
             🗓️ 勤怠入力（月次）
         </a>
 
-        <a href="{{ route('requests') }}" wire:navigate
+        <a href="{{ route('requests.index') }}" wire:navigate
             class="block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
             📝 申請管理
         </a>

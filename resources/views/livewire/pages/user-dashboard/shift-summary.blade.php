@@ -27,19 +27,26 @@ $progressPercent = $this->monthlyTargetMinutes > 0
         {{-- Standard Hours --}}
         <div class="bg-white rounded-2xl shadow border p-5">
             <p class="text-sm text-gray-500">Standard Hours</p>
-            <p class="mt-2 text-xl font-bold">
-                @switch($shift?->workType?->code)
-                @case('fixed')
-                @case('short_time')
-                {{ $shift->standard_start_time }} – {{ $shift->standard_end_time }}
-                @break
-                @case('flex')
-                Core {{ $shift->core_start_time }} – {{ $shift->core_end_time }}
-                @break
-                @default
-                —
-                @endswitch
+
+            @if($shift && $shift->workType->code === 'flex')
+            <p class="mt-2 text-lg text-gray-500 font-semibold">
+                Core
             </p>
+            <p class="text-xl font-bold">
+                {{ \Carbon\Carbon::parse($shift->core_start_time)->format('H:i') }}
+                –
+                {{ \Carbon\Carbon::parse($shift->core_end_time)->format('H:i') }}
+            </p>
+
+            @elseif($shift && in_array($shift->workType->code, ['fixed','short_time']))
+            <p class="mt-2 text-xl font-bold">
+                {{ \Carbon\Carbon::parse($shift->standard_start_time)->format('H:i') }}
+                –
+                {{ \Carbon\Carbon::parse($shift->standard_end_time)->format('H:i') }}
+            </p>
+            @else
+            —
+            @endif
         </div>
 
         {{-- Monthly Progress --}}
@@ -55,15 +62,33 @@ $progressPercent = $this->monthlyTargetMinutes > 0
                     style="width: {{ $progressPercent }}%; background-color:#6366f1">
                 </div>
             </div>
+
+            <p class="text-xs text-gray-500">
+                ({{ $this->monthlyConsumedDays }} / {{ $this->monthlyWorkableDays }} work days)
+            </p>
+
         </div>
 
 
-        {{-- Break Minutes --}}
+        {{-- Daily Work Time --}}
         <div class="bg-white rounded-2xl shadow border p-5">
-            <p class="text-sm text-gray-500">Break</p>
-            <p class="mt-2 text-xl font-bold">
-                {{ $shift?->break_minutes ? $shift->break_minutes.' min' : '—' }}
-            </p>
+            <p class="text-sm text-gray-500">Daily Work Time</p>
+
+            {{-- Break --}}
+            <div class="mt-2">
+                <p class="text-xs text-gray-500">Break</p>
+                <p class="text-lg font-bold">
+                    {{ $shift?->break_minutes ?? '—' }} min
+                </p>
+            </div>
+
+            {{-- Default working hours --}}
+            <div class="mt-2">
+                <p class="text-xs text-gray-500">Default working hours</p>
+                <p class="text-lg font-bold">
+                    {{ $this->dailyWorkHours ?? '—' }} h / day
+                </p>
+            </div>
         </div>
 
         {{-- Overtime --}}
