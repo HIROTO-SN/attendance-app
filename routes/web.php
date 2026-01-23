@@ -1,5 +1,7 @@
 <?php
 
+use App\Livewire\Request\RequestCreate;
+use App\Livewire\Request\RequestIndex;
 use App\Livewire\UserDashboard\UserDashboard;
 use Illuminate\Support\Facades\Route;
 
@@ -24,8 +26,9 @@ Route::middleware([
 
     // 申請管理一覧
     // Route::get('/requests', RequestIndex::class)
-    Route::get('/requests', UserDashboard::class)
-        ->name('requests');
+    Route::get('/requests', RequestIndex::class)
+        ->name('requests.index');    
+    Route::get('/requests/create', RequestCreate::class)->name('requests.create');
 
     // 交通費申請
     // Route::get('/transport/expense', TransportExpense::class)
