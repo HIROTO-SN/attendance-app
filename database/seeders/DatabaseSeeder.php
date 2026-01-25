@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UsersTableSeeder::class,
             WorkTypeSeeder::class,
+            RequestTypeSeeder::class,
             // 他のシーダーがあれば追記
         ]);
 
