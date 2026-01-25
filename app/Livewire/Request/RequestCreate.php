@@ -3,34 +3,43 @@
 namespace App\Livewire\Request;
 
 use App\Models\Request;
+use App\Models\RequestType;
 use Livewire\Component;
 
 class RequestCreate extends Component {
-    public string $type = '';
-    public ?string $target_date = null;
+    public $requestTypeId;
+    public $target_date;
+    public $payload = [];
 
-    // 共通
-    public string $reason = '';
+    public function getRequestTypesProperty() {
+        return RequestType::active()->orderBy( 'id' )->get();
+    }
 
-    // 打刻修正用
-    public ?string $start_time = null;
-    public ?string $end_time = null;
+    public function getSelectedTypeProperty() {
+        return RequestType::find( $this->requestTypeId );
+    }
 
     public function submit() {
-        $this->validate( [
-            'type' => 'required',
+        $rules = [
+            'requestTypeId' => 'required|exists:request_types,id',
             'target_date' => 'required|date',
-        ] );
+        ];
+
+        if ( $this->selectedType?->payload_schema ) {
+            foreach ( $this->selectedType->payload_schema[ 'fields' ] as $field ) {
+                if ( !empty( $field[ 'required' ] ) ) {
+                    $rules[ "payload.{$field['name']}" ] = 'required';
+                }
+            }
+        }
+
+        $this->validate( $rules );
 
         Request::create( [
             'user_id' => auth()->id(),
-            'type' => $this->type,
+            'request_type_id' => $this->requestTypeId,
             'target_date' => $this->target_date,
-            'payload' => [
-                'start_time' => $this->start_time,
-                'end_time' => $this->end_time,
-                'reason' => $this->reason,
-            ],
+            'payload' => $this->payload,
             'status' => 'pending',
         ] );
 
