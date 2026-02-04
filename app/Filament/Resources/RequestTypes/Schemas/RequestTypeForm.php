@@ -33,7 +33,6 @@ class RequestTypeForm {
             ->label( '有効' ),
 
             /**
-            * 👇 ここが肝
             * 管理画面では JSON を見せない
             */
             Repeater::make( 'payload_schema.fields' )

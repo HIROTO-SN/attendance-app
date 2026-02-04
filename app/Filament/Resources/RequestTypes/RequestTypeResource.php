@@ -9,42 +9,49 @@ use App\Filament\Resources\RequestTypes\Schemas\RequestTypeForm;
 use App\Filament\Resources\RequestTypes\Tables\RequestTypesTable;
 use App\Models\RequestType;
 use BackedEnum;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class RequestTypeResource extends Resource
-{
+class RequestTypeResource extends Resource {
     protected static ?string $model = RequestType::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?string $navigationLabel = '申請種別';
+    protected static ?int $navigationSort = 20;
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function form(Schema $schema): Schema
-    {
-        return RequestTypeForm::configure($schema);
+    public static function form( Schema $schema ): Schema {
+        return RequestTypeForm::configure( $schema );
     }
 
-    public static function table(Table $table): Table
-    {
-        return RequestTypesTable::configure($table);
+    public static function table( Table $table ): Table {
+        return RequestTypesTable::configure( $table );
     }
 
-    public static function getRelations(): array
-    {
+    public static function getRelations(): array {
         return [
             //
         ];
     }
 
-    public static function getPages(): array
-    {
+    public static function getPages(): array {
         return [
-            'index' => ListRequestTypes::route('/'),
-            'create' => CreateRequestType::route('/create'),
-            'edit' => EditRequestType::route('/{record}/edit'),
+            'index' => ListRequestTypes::route( '/' ),
+            'create' => CreateRequestType::route( '/create' ),
+            'edit' => EditRequestType::route( '/{record}/edit' ),
+        ];
+    }
+
+    public static function getNavigationItems(): array {
+        return [
+            NavigationItem::make( static::getNavigationLabel() )
+            ->group( '申請管理' )
+            ->icon( static::getNavigationIcon() )
+            ->url( static::getUrl() )
+            ->sort( static::$navigationSort ),
         ];
     }
 }
