@@ -7,19 +7,34 @@
     </x-slot>
 
     <div class="space-y-4">
+        <!-- Clock In -->
         <div>
             <label class="block mb-1 text-sm text-gray-600">Clock In</label>
-            <input type="time" wire:model="start_time" class="w-full border rounded-lg px-3 py-2">
+            <input type="time" wire:model.defer="start_time" class="w-full border rounded-lg px-3 py-2">
+
+            @error('start_time')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
+        <!-- Clock Out -->
         <div>
             <label class="block mb-1 text-sm text-gray-600">Clock Out</label>
-            <input type="time" wire:model="end_time" class="w-full border rounded-lg px-3 py-2">
+            <input type="time" wire:model.defer="end_time" class="w-full border rounded-lg px-3 py-2">
+
+            @error('end_time')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
+        <!-- Break -->
         <div>
             <label class="block mb-1 text-sm text-gray-600">Break (minutes)</label>
-            <input type="number" wire:model="break_minutes" class="w-full border rounded-lg px-3 py-2">
+            <input type="number" wire:model.defer="break_minutes" class="w-full border rounded-lg px-3 py-2">
+
+            @error('break_minutes')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
     </div>
 
