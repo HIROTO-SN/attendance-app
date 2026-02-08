@@ -75,18 +75,6 @@ class User extends Authenticatable implements FilamentUser {
         return $this->hasMany( AttendanceRecord::class );
     }
 
-    // 休暇申請
-
-    public function leaveRequests() {
-        return $this->hasMany( LeaveRequest::class );
-    }
-
-    // 承認した休暇申請
-
-    public function approvedLeaveRequests() {
-        return $this->hasMany( LeaveRequest::class, 'approver_id' );
-    }
-
     // シフト
 
     public function shifts() {
