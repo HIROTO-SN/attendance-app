@@ -6,6 +6,7 @@ use App\Models\AttendanceRecord;
 use App\Models\Shift;
 use Illuminate\Support\Carbon;
 use Livewire\Component;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 class ShiftModal extends Component {
     protected $listeners = [
@@ -21,6 +22,13 @@ class ShiftModal extends Component {
     public string $start_time = '';
     public string $end_time = '';
     public int $break_minutes = 60;
+
+    public bool $overtimeDetected = false;
+    public int $overtimeMinutes = 0;
+
+    // 残業申請用
+    public bool $showOvertimeForm = false;
+    public array $overtimePayload = [];
 
     protected $rules = [
         'start_time'     => 'required|date_format:H:i',
@@ -56,11 +64,7 @@ class ShiftModal extends Component {
 
         $userId = auth()->id();
 
-        /** ===  ===  ===  ===  ===  ===  ===  ===  =
-        * Shift / WorkType 取得
-        * ===  ===  ===  ===  ===  ===  ===  ===  = */
         $shift = Shift::where( 'user_id', $userId )
-        ->with( 'workType' )
         ->first();
 
         if ( ! $shift ) {
@@ -68,37 +72,37 @@ class ShiftModal extends Component {
             return;
         }
 
-        $workTypeId = $shift->work_type_id;
-
-        /** ===  ===  ===  ===  ===  ===  ===  ===  =
-        * 打刻時刻生成
-        * ===  ===  ===  ===  ===  ===  ===  ===  = */
         $clockIn  = Carbon::parse( $this->date . ' ' . $this->start_time );
         $clockOut = Carbon::parse( $this->date . ' ' . $this->end_time );
 
-        if ( $clockOut->lessThanOrEqualTo( $clockIn ) ) {
-            $this->addError( 'end_time', '退勤時刻は出勤時刻より後にしてください。' );
-            return;
-        }
+        $workedMinutes  =
+        $clockIn->diffInMinutes( $clockOut )
+        - ( int ) $this->break_minutes;
 
         /** ===  ===  ===  ===  ===  ===  ===  ===  =
-        * ① 開始時刻制限（work_type_id が 2, 3 以外）
+        * 残業チェック（保存前）
         * ===  ===  ===  ===  ===  ===  ===  ===  = */
-        if ( ! in_array( $workTypeId, [ 2, 3 ] ) ) {
+        if ( $workedMinutes  > $shift->daily_work_minutes ) {
 
-            // 例：所定開始時刻（Shift にある想定）
-            $standardStart = Carbon::parse(
-                $this->date . ' ' . $shift->standard_start_time
-            );
+            $this->overtimeMinutes =
+            $workedMinutes - $shift->daily_work_minutes;
 
-            // 例：±30分以内のみ許可
-            if ( $clockIn->diffInMinutes( $standardStart, false ) < -30 ) {
-                $this->addError(
-                    'start_time',
-                    '出勤時刻が所定開始時刻より早すぎます。'
-                );
-                return;
-            }
+            // 🔔 アラートを出して保存しない
+            LivewireAlert::text( '所定労働時間を超えています。残業申請を行いますか？' )
+            ->warning()
+            ->position( 'center' )
+            ->timer( 100000 )
+            ->withOptions( [
+                'width' => 360,
+                'allowOutsideClick' => false,
+                'allowEscapeKey' => false,
+            ] )
+            ->withConfirmButton( '申請する' )
+            ->onConfirm( 'applyOverTime', [] )
+            ->withCancelButton( 'しない' )
+            ->show();
+
+            return;
         }
 
         /** ===  ===  ===  ===  ===  ===  ===  ===  =
@@ -116,31 +120,14 @@ class ShiftModal extends Component {
             ]
         );
 
-        /** ===  ===  ===  ===  ===  ===  ===  ===  =
-        * ② 残業チェック（work_type_id が 2, 3）
-        * ===  ===  ===  ===  ===  ===  ===  ===  = */
-        if ( in_array( $workTypeId, [ 2, 3 ] ) ) {
-
-            $workedMinutes =
-            $clockIn->diffInMinutes( $clockOut )
-            - ( int ) $this->break_minutes;
-
-            if ( $workedMinutes > $shift->daily_work_minutes ) {
-                $this->dispatch(
-                    'notify',
-                    type: 'warning',
-                    message: '所定労働時間を超えています。残業申請を提出してください。'
-                );
-            }
-        }
-
-        /** ===  ===  ===  ===  ===  ===  ===  ===  =
-        * 後処理
-        * ===  ===  ===  ===  ===  ===  ===  ===  = */
         $this->dispatch( 'shift-updated' );
-
         $this->close();
         $this->show = false;
+    }
+
+    public function applyOverTime() {
+        $this->overtimeDetected = true;
+        $this->showOvertimeForm = true;
     }
 
     public function close() {
