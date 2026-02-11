@@ -71,5 +71,3 @@
     </x-slot>
 
 </x-common.modal.base>
-
-@livewireAlerts
