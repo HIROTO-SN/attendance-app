@@ -36,6 +36,28 @@
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
+
+        @if($showOvertimeForm)
+        <div class="mt-6 border-t pt-4 space-y-4">
+            <h3 class="text-lg font-semibold text-yellow-700">
+                残業申請（{{ $overtimeMinutes }} 分）
+            </h3>
+
+            <div>
+                <label class="block text-sm text-gray-600">残業理由</label>
+                <textarea wire:model.defer="overtimePayload.reason"
+                    class="w-full border rounded-lg px-3 py-2"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button wire:click="submitOvertime"
+                    class="px-4 py-2 rounded-lg bg-yellow-600 text-white hover:bg-yellow-700">
+                    残業申請して保存
+                </button>
+            </div>
+        </div>
+        @endif
+
     </div>
 
     <x-slot name="footer">
