@@ -4,7 +4,9 @@
     <livewire:layout.navigation /> --}}
 
     <!-- Main Content -->
-    <main class="flex-1 p-10 overflow-y-auto">
+    <main class="flex-1 p-10 overflow-y-auto" x-data="{ loading: false }"
+        x-on:livewire:navigated.window="loading = false" x-on:processing-completed.window="loading = false">
+
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
             <div class="mb-10">
@@ -23,7 +25,7 @@
                 <!-- Month Selector -->
                 <div class="flex justify-between items-center mb-6">
                     <div class="flex items-center gap-3">
-                        <button wire:click="prevMonth"
+                        <button wire:click="prevMonth" x-on:click="loading = true"
                             class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition">
                             ← Prev
                         </button>
@@ -32,12 +34,12 @@
                             {{ $this->monthName }} {{ $year }}
                         </h2>
 
-                        <button wire:click="nextMonth"
+                        <button wire:click="nextMonth" x-on:click="loading = true"
                             class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition">
                             Next →
                         </button>
 
-                        <button wire:click="goToToday"
+                        <button wire:click="goToToday" x-on:click="loading = true"
                             class="ml-4 px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition font-semibold">
                             Today
                         </button>
@@ -79,13 +81,15 @@
                             $isHoliday = in_array($key, $this->holidayDates);
                             @endphp
 
-                            <tr wire:key="attendance-{{ $key }}" wire:dblclick="openEditModal('{{ $key }}')" class="
-                                transition cursor-pointer
-                                hover:bg-indigo-50
-                                @if($isHoliday) bg-gray-200
-                                @elseif($isWeekend) bg-gray-300
-                                @endif
-                            ">
+                            <tr wire:key="attendance-{{ $key }}" wire:dblclick="openEditModal('{{ $key }}')"
+                                x-on:dblclick="loading = true" class="
+                                    transition cursor-pointer
+                                    hover:bg-indigo-50
+                                    @if($isHoliday) bg-gray-200
+                                    @elseif($isWeekend) bg-gray-300
+                                    @endif
+                                ">
+
                                 <td class="px-4 py-3 border-b">{{ $key }}</td>
                                 <td class="px-4 py-3 border-b">{{ $date->format('D') }}</td>
 
@@ -123,7 +127,8 @@
                                     $attendance->clock_in->diffInMinutes($attendance->clock_out)
                                     - ($attendance->break_minutes ?? 0);
                                     @endphp
-                                    {{ intdiv($totalMinutes, 60) }}:{{ str_pad($totalMinutes % 60, 2, '0', STR_PAD_LEFT)
+                                    {{ intdiv($totalMinutes, 60) }}:{{ str_pad($totalMinutes % 60, 2, '0',
+                                    STR_PAD_LEFT)
                                     }}
 
                                     @else
@@ -153,5 +158,6 @@
                 </div>
             </div>
         </div>
+        <x-common.loading />
     </main>
 </div>
