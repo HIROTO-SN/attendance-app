@@ -31,12 +31,14 @@ class UserDashboard extends Component {
         $date = Carbon::create( $this->year, $this->month )->subMonth();
         $this->year = $date->year;
         $this->month = $date->month;
+        $this->dispatch( 'processing-completed' );
     }
 
     public function nextMonth() {
         $date = Carbon::create( $this->year, $this->month )->addMonth();
         $this->year = $date->year;
         $this->month = $date->month;
+        $this->dispatch( 'processing-completed' );
     }
 
     public function getDaysInMonthProperty() {
@@ -127,6 +129,7 @@ class UserDashboard extends Component {
 
         $this->year = $today->year;
         $this->month = $today->month;
+        $this->dispatch( 'processing-completed' );
     }
 
     public function shiftUpdated () {
