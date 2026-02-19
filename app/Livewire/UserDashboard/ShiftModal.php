@@ -57,6 +57,8 @@ class ShiftModal extends Component {
         $this->start_time = $payload[ 'start_time' ];
         $this->end_time = $payload[ 'end_time' ];
         $this->break_minutes = $payload[ 'break_minutes' ];
+
+        $this->dispatch( 'processing-completed' );
     }
 
     public function save() {
