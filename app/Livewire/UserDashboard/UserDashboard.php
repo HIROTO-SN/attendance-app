@@ -17,9 +17,10 @@ class UserDashboard extends Component {
         'shift-updated' => 'shiftUpdated',
     ];
 
-    public function updatedYear()
+    public function yearChanged()
     {
         $this->month = now()->month;
+        $this->dispatch( 'processing-completed' );
     }
 
     public function mount() {
