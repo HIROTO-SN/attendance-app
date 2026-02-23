@@ -45,7 +45,7 @@
                         </button>
                     </div>
 
-                    <select wire:model.live="year"
+                    <select wire:model="year" wire:change="yearChanged" x-on:change="loading = true"
                         class="border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                         @foreach (range(now()->year, now()->year - 5) as $y)
                         <option value="{{ $y }}">{{ $y }}</option>
