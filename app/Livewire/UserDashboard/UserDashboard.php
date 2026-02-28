@@ -134,6 +134,8 @@ class UserDashboard extends Component {
     }
 
     public function shiftUpdated () {
+        $this->dispatch( 'processing-completed' );
+
         LivewireAlert::title( 'Success' )
         ->text( 'Your shift has been registered successfully' )
         ->position( 'center' )

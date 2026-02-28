@@ -8,5 +8,5 @@ return [
     'today' => 'Returning to current month...',
     'change_year' => 'Changing year...',
     'open_editor' => 'Opening attendance editor...',
-
+    'saving_shift' => 'Updating your attendance...'
 ];
