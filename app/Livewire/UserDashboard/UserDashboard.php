@@ -13,12 +13,19 @@ class UserDashboard extends Component {
     public $year;
     public $month;
 
-     protected $listeners = [
+    // キャッシュ用プロパティ
+    private $cachedMonthlyAttendances = null;
+    private $cachedMonthlyShifts = null;
+    private $cachedMonthlyRows = null;
+    private $cachedHolidayDates = null;
+
+    protected $listeners = [
         'shift-updated' => 'shiftUpdated',
     ];
 
     public function yearChanged()
     {
+        $this->clearCache();
         $this->month = now()->month;
         $this->dispatch( 'processing-completed' );
     }
@@ -29,6 +36,7 @@ class UserDashboard extends Component {
     }
 
     public function prevMonth() {
+        $this->clearCache();
         $date = Carbon::create( $this->year, $this->month )->subMonth();
         $this->year = $date->year;
         $this->month = $date->month;
@@ -36,10 +44,19 @@ class UserDashboard extends Component {
     }
 
     public function nextMonth() {
+        $this->clearCache();
         $date = Carbon::create( $this->year, $this->month )->addMonth();
         $this->year = $date->year;
         $this->month = $date->month;
         $this->dispatch( 'processing-completed' );
+    }
+
+    private function clearCache()
+    {
+        $this->cachedMonthlyAttendances = null;
+        $this->cachedMonthlyShifts = null;
+        $this->cachedMonthlyRows = null;
+        $this->cachedHolidayDates = null;
     }
 
     public function getDaysInMonthProperty() {
@@ -52,20 +69,32 @@ class UserDashboard extends Component {
 
     public function getMonthlyAttendancesProperty()
     {
-        return AttendanceRecord::where('user_id', auth()->id())
-            ->whereYear('clock_in', $this->year)
-            ->whereMonth('clock_out', $this->month)
+        if ($this->cachedMonthlyAttendances !== null) {
+            return $this->cachedMonthlyAttendances;
+        }
+
+        $this->cachedMonthlyAttendances = AttendanceRecord::where('user_id', auth()->id())
+            ->whereBetween('work_date', [$this->monthStart(), $this->monthEnd()])
             ->get()
             ->keyBy(function ($attendance) {
                 return $attendance->work_date->format('Y-m-d');
             });
+
+        return $this->cachedMonthlyAttendances;
     }
 
     public function getMonthlyShiftsProperty()
     {
-        return Shift::with('workType')
+        if ($this->cachedMonthlyShifts !== null) {
+            return $this->cachedMonthlyShifts;
+        }
+
+        $this->cachedMonthlyShifts = Shift::with('workType')
             ->where('user_id', auth()->id())
+            ->orderBy('id', 'desc')
             ->get();
+
+        return $this->cachedMonthlyShifts;
     }
 
     public function resolveShiftForDate(Carbon $date)
@@ -126,6 +155,7 @@ class UserDashboard extends Component {
 
     public function goToToday()
     {
+        $this->clearCache();
         $today = Carbon::today();
 
         $this->year = $today->year;
