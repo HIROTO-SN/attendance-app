@@ -48,9 +48,7 @@ class ShiftModal extends Component {
     ];
 
     public function open( array $payload ) {
-
-        $this->reset();
-
+        // UIを即座に更新
         $this->show = true;
         $this->shiftId = $payload[ 'shiftId' ];
         $this->date = $payload[ 'date' ];
@@ -58,6 +56,7 @@ class ShiftModal extends Component {
         $this->end_time = $payload[ 'end_time' ];
         $this->break_minutes = $payload[ 'break_minutes' ];
 
+        // 処理完了を通知してloadingを消す
         $this->dispatch( 'processing-completed' );
     }
 
@@ -104,7 +103,7 @@ class ShiftModal extends Component {
             ->withCancelButton( 'しない' )
             ->show();
 
-            $this->dispatch( 'shift-updated' );
+            $this->dispatch( 'processing-completed' );
             return;
         }
 
