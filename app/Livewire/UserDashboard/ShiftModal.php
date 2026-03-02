@@ -104,6 +104,7 @@ class ShiftModal extends Component {
             ->withCancelButton( 'しない' )
             ->show();
 
+            $this->dispatch( 'shift-updated' );
             return;
         }
 

@@ -65,7 +65,8 @@
             Cancel
         </button>
 
-        <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+        <button wire:click="save" x-on:click="loadingMessage = '{{ __('loading.saving_shift') }}'"
+            class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
             Save
         </button>
     </x-slot>
