@@ -38,7 +38,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Target Date
                     </label>
-                    <input type="date" wire:model.live="target_date" class="w-full rounded-xl border-gray-300 shadow-sm
+                    <input type="text" id="date" wire:model.live="target_date" class="w-full rounded-xl border-gray-300 shadow-sm
                                focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
 
