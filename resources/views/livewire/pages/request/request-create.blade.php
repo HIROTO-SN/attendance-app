@@ -38,8 +38,9 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Target Date
                     </label>
-                    <input type="text" id="date" wire:model.live="target_date" class="w-full rounded-xl border-gray-300 shadow-sm
-                               focus:ring-indigo-500 focus:border-indigo-500">
+                    <div id="request-create-root" wire:ignore>
+                        <input type="text" id="date" class="w-full rounded-xl border-gray-300 shadow-sm">
+                    </div>
                 </div>
 
                 <!-- Dynamic Payload Fields -->
