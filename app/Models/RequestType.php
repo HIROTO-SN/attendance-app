@@ -10,12 +10,14 @@ class RequestType extends Model {
         'name',
         'description',
         'payload_schema',
+        'date_rule',
         'is_active',
     ];
 
     protected $casts = [
         'payload_schema' => 'array',
         'is_active' => 'boolean',
+        'date_rule' => 'array',
     ];
 
     /**
