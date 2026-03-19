@@ -5,7 +5,7 @@ namespace App\Livewire\Request;
 use App\Models\AttendanceRecord;
 use App\Models\Request;
 use App\Models\RequestType;
-use App\Models\Shift;
+use App\Services\DateRuleService;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -34,15 +34,16 @@ class RequestCreate extends Component {
             $this->allowedDates = [];
             return;
         }
+
         $type = RequestType::find( $value );
-        if ( $type->code === 'punch_fix' ) {
-            $this->allowedDates = AttendanceRecord::where( 'user_id', auth()->id() )
-            ->pluck( 'work_date' )
-            ->map( fn( $d ) => $d->format( 'Y-m-d' ) )
-            ->toArray();
-        } else {
-            $this->allowedDates = [];
-        }
+
+        $rule = $type->date_rule ?? [];
+
+        $this->allowedDates = DateRuleService::generateAllowedDates(
+            $rule,
+            auth()->id()
+        );
+
         $this->dispatch( 'updateAllowedDates', dates: $this->allowedDates );
     }
 
