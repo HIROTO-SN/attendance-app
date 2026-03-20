@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 
-            $table->string('type'); 
+            $table->foreignId('request_type_id')->constrained(); 
             // punch_fix / overtime / leave
 
             $table->date('target_date')->nullable();

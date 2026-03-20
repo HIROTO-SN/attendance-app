@@ -55,14 +55,41 @@ class RequestCreate extends Component {
 
         if ( $this->selectedType?->payload_schema ) {
             foreach ( $this->selectedType->payload_schema[ 'fields' ] as $field ) {
+
+                $fieldRules = [];
+
+                // 必須チェック
                 if ( !empty( $field[ 'required' ] ) ) {
-                    $rules[ "payload.{$field['name']}" ] = 'required';
+                    $fieldRules[] = 'required';
+                } else {
+                    $fieldRules[] = 'nullable';
                 }
+
+                // 型チェック
+                switch ( $field[ 'type' ] ) {
+                    case 'time':
+                    $fieldRules[] = 'date_format:H:i';
+                    break;
+
+                    case 'date':
+                    $fieldRules[] = 'date';
+                    break;
+
+                    case 'text':
+                    case 'textarea':
+                    $fieldRules[] = 'string';
+                    break;
+
+                    case 'boolean':
+                    $fieldRules[] = 'boolean';
+                    break;
+                }
+
+                $rules[ "payload.{$field['name']}" ] = implode( '|', $fieldRules );
             }
         }
 
         $this->validate( $rules );
-
         Request::create( [
             'user_id' => auth()->id(),
             'request_type_id' => $this->requestTypeId,
