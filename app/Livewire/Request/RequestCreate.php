@@ -48,57 +48,59 @@ class RequestCreate extends Component {
     }
 
     public function submit() {
-        $rules = [
-            'requestTypeId' => 'required|exists:request_types,id',
-            'target_date' => 'required|date',
-        ];
+        try {
+            $rules = [
+                'requestTypeId' => 'required|exists:request_types,id',
+                'target_date' => 'required|date',
+            ];
 
-        if ( $this->selectedType?->payload_schema ) {
-            foreach ( $this->selectedType->payload_schema[ 'fields' ] as $field ) {
+            if ( $this->selectedType?->payload_schema ) {
+                foreach ( $this->selectedType->payload_schema[ 'fields' ] as $field ) {
 
-                $fieldRules = [];
+                    $fieldRules = [];
 
-                // 必須チェック
-                if ( !empty( $field[ 'required' ] ) ) {
-                    $fieldRules[] = 'required';
-                } else {
-                    $fieldRules[] = 'nullable';
+                    if ( !empty( $field[ 'required' ] ) ) {
+                        $fieldRules[] = 'required';
+                    } else {
+                        $fieldRules[] = 'nullable';
+                    }
+
+                    switch ( $field[ 'type' ] ) {
+                        case 'time':
+                        $fieldRules[] = 'date_format:H:i';
+                        break;
+                        case 'date':
+                        $fieldRules[] = 'date';
+                        break;
+                        case 'text':
+                        case 'textarea':
+                        $fieldRules[] = 'string';
+                        break;
+                        case 'boolean':
+                        $fieldRules[] = 'boolean';
+                        break;
+                    }
+
+                    $rules[ "payload.{$field['name']}" ] = implode( '|', $fieldRules );
                 }
-
-                // 型チェック
-                switch ( $field[ 'type' ] ) {
-                    case 'time':
-                    $fieldRules[] = 'date_format:H:i';
-                    break;
-
-                    case 'date':
-                    $fieldRules[] = 'date';
-                    break;
-
-                    case 'text':
-                    case 'textarea':
-                    $fieldRules[] = 'string';
-                    break;
-
-                    case 'boolean':
-                    $fieldRules[] = 'boolean';
-                    break;
-                }
-
-                $rules[ "payload.{$field['name']}" ] = implode( '|', $fieldRules );
             }
+
+            $this->validate( $rules );
+
+            Request::create( [
+                'user_id' => auth()->id(),
+                'request_type_id' => $this->requestTypeId,
+                'target_date' => $this->target_date,
+                'payload' => $this->payload,
+                'status' => 'pending',
+            ] );
+
+            return redirect()->route( 'requests.index' );
+
+        } catch ( \Illuminate\Validation\ValidationException $e ) {
+            $this->dispatch( 'processing-completed' );
+            throw $e;
         }
-
-        $this->validate( $rules );
-        Request::create( [
-            'user_id' => auth()->id(),
-            'request_type_id' => $this->requestTypeId,
-            'target_date' => $this->target_date,
-            'payload' => $this->payload,
-            'status' => 'pending',
-        ] );
-
-        return redirect()->route( 'requests.index' );
     }
 
     public function render() {
