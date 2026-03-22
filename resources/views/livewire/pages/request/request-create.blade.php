@@ -60,21 +60,33 @@
                         @case('time')
                         <input type="time" wire:model.live="payload.{{ $field['name'] }}" class="w-full rounded-xl border-gray-300 shadow-sm
                                                    focus:ring-indigo-500 focus:border-indigo-500">
+                        @error("payload." . $field['name'])
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                         @break
 
                         @case('date')
                         <input type="date" wire:model.live="payload.{{ $field['name'] }}" class="w-full rounded-xl border-gray-300 shadow-sm
                                                    focus:ring-indigo-500 focus:border-indigo-500">
+                        @error("payload." . $field['name'])
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                         @break
 
                         @case('text')
                         <input type="text" wire:model.live="payload.{{ $field['name'] }}" class="w-full rounded-xl border-gray-300 shadow-sm
                                                    focus:ring-indigo-500 focus:border-indigo-500">
+                        @error("payload." . $field['name'])
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                         @break
 
                         @case('textarea')
                         <textarea rows="4" wire:model.live="payload.{{ $field['name'] }}" class="w-full rounded-xl border-gray-300 shadow-sm
                                                    focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        @error("payload." . $field['name'])
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                         @break
 
                         @case('boolean')
@@ -85,6 +97,9 @@
                                 {{ $field['label'] }}
                             </span>
                         </div>
+                        @error("payload." . $field['name'])
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                         @break
 
                         @endswitch
