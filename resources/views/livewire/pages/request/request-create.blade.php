@@ -1,5 +1,6 @@
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 text-gray-900">
-    <main class="p-10">
+    <main class="p-10" x-data="{ loadingMessage: '' }" x-on:livewire:navigated.window="loadingMessage = ''"
+        x-on:processing-completed.window="loadingMessage = ''">
         <div class="max-w-3xl mx-auto">
 
             <!-- Header -->
@@ -31,6 +32,9 @@
                         </option>
                         @endforeach
                     </select>
+                    @error('requestTypeId')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Target Date -->
@@ -41,6 +45,9 @@
                     <div id="request-create-root" wire:ignore>
                         <input type="text" id="date" class="w-full rounded-xl border-gray-300 shadow-sm">
                     </div>
+                    @error('target_date')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Dynamic Payload Fields -->
@@ -115,7 +122,7 @@
                         Cancel
                     </a>
 
-                    <button wire:click="submit" class="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold
+                    <button wire:click="submit" @click="loadingMessage = '{{ __('loading.submit_request') }}'" class="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold
                                hover:bg-indigo-700 transition shadow">
                         Submit Request
                     </button>
@@ -123,5 +130,6 @@
 
             </div>
         </div>
+        <x-common.loading />
     </main>
 </div>
